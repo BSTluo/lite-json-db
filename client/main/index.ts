@@ -3,7 +3,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 // 此变量存储词库数据位置
-let fileDir:any
+let fileDir:string
+
 const config = {
   'host': ''
 }
@@ -28,7 +29,7 @@ const getjson = (list:string, name:string) => {
   * @param name 词库文件名
   * @param file 词库json对象
   */
-const update = (list:string, name:string, file:any) => {
+const update = (list:string, name:string, file:object) => {
   try {
     fs.writeFileSync(path.join(fileDir, `./word/${list}/${name}.json`), JSON.stringify(file, null, 3))
   } catch (error) {
@@ -43,7 +44,7 @@ export default class dictionary {
    * @param id 操作者id
    * @param host 指定云服务器，可为null
    */
-  constructor (dir:any, id:string, host:string|null) {
+  constructor (dir:string, id:string, host?:string|null) {
     fileDir = dir
     this.id = id
     config.host = (host) ? host : 'word.bstluo.top'
@@ -113,7 +114,7 @@ export default class dictionary {
    * @param arr 数据(['a','b',.....])
    * @returns 结果
   */
-  setKey = (key:string, arr:any) => { return setKey(this.id, key, arr) }
+  setKey = (key:string, arr:string[]) => { return setKey(this.id, key, arr) }
 
   /**
    * 将一些数据添加到某个键
@@ -121,7 +122,7 @@ export default class dictionary {
    * @param arr 数据(['a','b',.....])
    * @returns 结果
   */
-  addArray = (key:string, arr:any) => { return addArray(this.id, key, arr) }
+  addArray = (key:string, arr:string[]) => { return addArray(this.id, key, arr) }
 
   /**
    * 删除键的某个下标
@@ -180,9 +181,9 @@ export default class dictionary {
 const getWordLibraryList = () => {
   const fileName = path.join(fileDir, './word/wordData')
   const list = fs.readdirSync(fileName)
-  const kulist:any = []
+  const kulist:string[] = []
 
-  list.forEach(function (item:any, index:any) {
+  list.forEach(function (item:string) {
     const name = item.match(/(.*).json/)
     if (name) {
       kulist.push(name[1])
@@ -236,8 +237,8 @@ const findWordLibraryList = (keywords:string) => {
  */
 const toFindTrigger = (key:string) => {
   const list = getWordLibraryList()
-  const resultKeysArray:any = []
-  const resultItemArray:any = []
+  const resultKeysArray: string[][] = []
+  const resultItemArray: any[][] = []
 
   list.forEach(function (item:string) {
     const wordLibraryObj = getjson('wordData', `${item}.json`)
@@ -264,7 +265,7 @@ const toFindTrigger = (key:string) => {
  * @param information [id, keys, item]
  * @returns 结果(返回此键的长度)
  */
-const addWord = (information:any) => {
+const addWord = (information:string[]) => {
   const name = readPointer(information[0])
   const q = information[1]
   const a = information[2]
@@ -283,7 +284,7 @@ const addWord = (information:any) => {
  * @param information [id, keys, 下标]
  * @returns 结果(成功/失败)
  */
-const delWord = (information:any) => {
+const delWord = (information:string[]) => {
   const name = readPointer(information[0])
   const q = information[1]
   const index = String(information[2]) // 删除下标
@@ -310,7 +311,7 @@ const upload = (key:string) => {
   const up = getjson('wordData', `${key}.json`)
   if (JSON.stringify(up) !== '{}') {
     try {
-      axios.post(`https://${config.host}/new.php`, up).then(function (response:any) {
+      axios.post(`https://${config.host}/new.php`, up).then(function (response: { data: any }) {
         // return ` [词库核心] ${response.data}`
         return response.data
       })
@@ -330,7 +331,7 @@ const download = (key:string) => {
   try {
     axios.post(`https://${config.host}/read.php`, {
       id: key
-    }).then(function (response:any) {
+    }).then(function (response: { data: object }) {
       update('wordData', key, response.data)
       // return ' [词库核心] 下载成功'
       return '成功'
@@ -346,7 +347,7 @@ const download = (key:string) => {
  * @param obj [id:string, 指向词库名]
  * @returns 结果(成功)
  */
-const modifyPointer = (obj:any) => {
+const modifyPointer = (obj: string[]) => {
   const id = obj[0]
   const pointer = obj[1]
   const data = getjson('wordconfig', 'listConfig.json')
@@ -413,7 +414,7 @@ const readObject = (key:string) => {
  * @param data 添加的数组
  * @returns 结果
  */
-const addArray = (id:string, key:string, data:any) => {
+const addArray = (id:string, key:string, data:string[]) => {
   const name = readPointer(id)
   const originData = getjson('wordData', `${name}.json`)
   originData[key] = originData[key].concat(data)
@@ -428,7 +429,7 @@ const addArray = (id:string, key:string, data:any) => {
  * @param data 设定的数组
  * @returns 结果
  */
-const setKey = (id:string, key:string, data:any) => {
+const setKey = (id:string, key:string, data:string[]) => {
   const name = readPointer(id)
   const originData = getjson('wordData', `${name}.json`)
   originData[key] = data

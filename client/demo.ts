@@ -1,7 +1,7 @@
 import litejson from './main/index'
 
 
-const lJson = new litejson(__dirname, 'admin', null)
+const lJson = new litejson(__dirname, 'admin')
 
 lJson.modifyPointer('json库1')
 lJson.addSingle('a', 'b')
