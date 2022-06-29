@@ -61,7 +61,7 @@ export default class dictionary {
   getDBObject = () => { return getWordLibraryObject() }
 
   /**
-   * 获取词库列表
+   * 获取已有数据库列表
    * @returns 查询结果[库名,库名]
    */
   getDBList = () => {
@@ -73,7 +73,7 @@ export default class dictionary {
   }
 
   /**
-   * 根据关键词查找词库
+   * 根据关键词查找库名
    * @param key 关键词
    * @returns 数组 查询结果[库名,库名]
    */
@@ -86,21 +86,21 @@ export default class dictionary {
   }
 
   /**
-   * 根据关键词查找触发词
+   * 根据关键词查找键
    * @param key 关键词
    * @returns 查询结果[[库名, 问],[库名, 问]...]
    */
   findTrigger = (key:string) => { return toFindTrigger(key)[0] }
 
   /**
-   * 根据关键词查找回复词
+   * 根据关键词查找值
    * @param key 关键词
    * @returns 查询结果[[库名, 问, 答],[库名, 问, 答]...]
    */
   findReport = (key:string) => { return toFindTrigger(key)[1] }
 
   /**
-   * 添加词库
+   * 添加单个值
    * @param key 键
    * @param item 值
    * @returns 结果(返回此键的长度)
@@ -124,14 +124,15 @@ export default class dictionary {
   addArray = (key:string, arr:any) => { return addArray(this.id, key, arr) }
 
   /**
-   * 删除词库
+   * 删除键的某个下标
    * @param key 键
    * @param serialNumber 序号(从1开始、为all则全删)
    * @returns 结果(成功/失败)
    */
   del = (key:string, serialNumber:string) => { return delWord([this.id, key, serialNumber]) }
+
   /**
-   * 下载词库到本地(覆盖)
+   * 下载json到本地(覆盖)
    * @param key 下载码
    * @returns 结果(成功/失败)
    */
@@ -139,7 +140,7 @@ export default class dictionary {
 
   /**
    * 上传本地词库到云端
-   * @param key 词库名(不用加.json)
+   * @param key 库名(不用加.json)
    * @returns 结果(下载码/失败)
    */
   upload = (key:string) => { return upload(key) }
