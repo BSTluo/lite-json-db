@@ -1,3 +1,5 @@
+
+[![CodeFactor](https://www.codefactor.io/repository/github/bstluo/lite-json-db/badge)](https://www.codefactor.io/repository/github/bstluo/lite-json-db)
 # 简介
 
 是轻型的json存储数据库...((?)
