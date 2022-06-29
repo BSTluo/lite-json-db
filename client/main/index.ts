@@ -55,16 +55,16 @@ export default class dictionary {
   }
 
   /**
-   * 获取词库对象
-   * @returns 词库对象
+   * 获取json对象
+   * @returns json对象
    */
-  getWordObject = () => { return getWordLibraryObject() }
+  getDBObject = () => { return getWordLibraryObject() }
 
   /**
    * 获取词库列表
    * @returns 查询结果[库名,库名]
    */
-  getWordList = () => {
+  getDBList = () => {
     /*
     const out = ['[词库核心]', '当前有以下词库：'].concat(getWordLibraryList()).join('\n')
     return out
@@ -77,7 +77,7 @@ export default class dictionary {
    * @param key 关键词
    * @returns 数组 查询结果[库名,库名]
    */
-  findWordLibrary = (key:string) => {
+  findDB = (key:string) => {
     /*
     const out = ['[词库核心]', '当前有以下词库：'].concat(findWordLibraryList(key)).join('\n')
     return out
@@ -90,14 +90,14 @@ export default class dictionary {
    * @param key 关键词
    * @returns 查询结果[[库名, 问],[库名, 问]...]
    */
-  lookingForTrigger = (key:string) => { return toFindTrigger(key)[0] }
+  findTrigger = (key:string) => { return toFindTrigger(key)[0] }
 
   /**
    * 根据关键词查找回复词
    * @param key 关键词
    * @returns 查询结果[[库名, 问, 答],[库名, 问, 答]...]
    */
-  lookingForRep = (key:string) => { return toFindTrigger(key)[1] }
+  findReport = (key:string) => { return toFindTrigger(key)[1] }
 
   /**
    * 添加词库
@@ -181,7 +181,7 @@ const getWordLibraryList = () => {
   const list = fs.readdirSync(fileName)
   const kulist:any = []
 
-  list.forEach(function (item, index) {
+  list.forEach(function (item:any, index:any) {
     const name = item.match(/(.*).json/)
     if (name) {
       kulist.push(name[1])
@@ -309,7 +309,7 @@ const upload = (key:string) => {
   const up = getjson('wordData', `${key}.json`)
   if (JSON.stringify(up) !== '{}') {
     try {
-      axios.post(`https://${config.host}/new.php`, up).then(function (response) {
+      axios.post(`https://${config.host}/new.php`, up).then(function (response:any) {
         // return ` [词库核心] ${response.data}`
         return response.data
       })
@@ -329,7 +329,7 @@ const download = (key:string) => {
   try {
     axios.post(`https://${config.host}/read.php`, {
       id: key
-    }).then(function (response) {
+    }).then(function (response:any) {
       update('wordData', key, response.data)
       // return ' [词库核心] 下载成功'
       return '成功'
