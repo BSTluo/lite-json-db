@@ -199,7 +199,7 @@ const getWordLibraryList = () => {
  */
 const getWordLibraryObject = () => {
   const list = getWordLibraryList()
-  const data:any = {}
+  const data: { [key: string]: string[] } = {}
 
   list.forEach(function (item:string) {
     const wordLibraryObj = getjson('wordData', `${item}.json`)
@@ -238,7 +238,7 @@ const findWordLibraryList = (keywords:string) => {
 const toFindTrigger = (key:string) => {
   const list = getWordLibraryList()
   const resultKeysArray: string[][] = []
-  const resultItemArray: any[][] = []
+  const resultItemArray: string[][] = []
 
   list.forEach(function (item:string) {
     const wordLibraryObj = getjson('wordData', `${item}.json`)
@@ -311,7 +311,7 @@ const upload = (key:string) => {
   const up = getjson('wordData', `${key}.json`)
   if (JSON.stringify(up) !== '{}') {
     try {
-      axios.post(`https://${config.host}/new.php`, up).then(function (response: { data: any }) {
+      axios.post(`https://${config.host}/new.php`, up).then(function (response: { data: string }) {
         // return ` [词库核心] ${response.data}`
         return response.data
       })
