@@ -1,5 +1,8 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+if (!is_dir($file)) {
+    mkdir('./list', 0755);
+}
 
 # Get JSON as a string
 $json_str = file_get_contents('php://input');
