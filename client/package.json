@@ -1,0 +1,20 @@
+{
+  "name": "litejson_db",
+  "version": "1.0.0",
+  "description": "lite json db system",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc index.ts && node index.js"
+  },
+  "keywords": [
+    "json"
+  ],
+  "author": "BSTluo",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  }
+}
