@@ -10,8 +10,8 @@ const config = {
 }
 /**
   * 返回一个文件的json对象
-  * @param list 词库文件目录（wordconfig/userData/wordData）
-  * @param name 词库文件名
+  * @param list 数据库文件目录（wordconfig/userData/wordData）
+  * @param name json文件名
   * @return 词库json对象
   */
 const getjson = (list:string, name:string) => {
@@ -25,8 +25,8 @@ const getjson = (list:string, name:string) => {
 
 /**
   * 将词库json对象存储在文件内
-  * @param list 词库文件目录（wordconfig/userData/wordData）
-  * @param name 词库文件名
+  * @param list 数据库文件目录（wordconfig/userData/wordData）
+  * @param name json文件名
   * @param file 词库json对象
   */
 const update = (list:string, name:string, file:object) => {
@@ -39,7 +39,7 @@ const update = (list:string, name:string, file:object) => {
 export default class dictionary {
   id:string
   /**
-   * 定义词库存储位置
+   * 定义数据库存储位置
    * @param dir 存储库根目录
    * @param id 操作者id
    * @param host 指定云服务器，可为null
@@ -140,7 +140,7 @@ export default class dictionary {
   download = (key:string) => { return download(key) }
 
   /**
-   * 上传本地词库到云端
+   * 上传本地json到云端
    * @param key 库名(不用加.json)
    * @returns 结果(下载码/失败)
    */
@@ -175,8 +175,8 @@ export default class dictionary {
 }
 
 /**
- * 获取词库库表
- * @returns 词库库表
+ * 获取数据库库表
+ * @returns 数据库库表
  */
 const getWordLibraryList = () => {
   const fileName = path.join(fileDir, './word/wordData')
@@ -194,8 +194,8 @@ const getWordLibraryList = () => {
 }
 
 /**
- * 初始化词库对象
- * @returns 词库对象
+ * 初始化数据库对象
+ * @returns 数据库对象
  */
 const getWordLibraryObject = () => {
   const list = getWordLibraryList()
@@ -261,7 +261,7 @@ const toFindTrigger = (key:string) => {
 }
 
 /**
- * 创建词库
+ * 创建键值
  * @param information [id, keys, item]
  * @returns 结果(返回此键的长度)
  */
@@ -280,7 +280,7 @@ const addWord = (information:string[]) => {
 }
 
 /**
- * 删除词库
+ * 删除键值
  * @param information [id, keys, 下标]
  * @returns 结果(成功/失败)
  */
@@ -323,7 +323,7 @@ const upload = (key:string) => {
 }
 
 /**
- * 下载
+ * 下载json到本地
  * @param key 下载码
  * @returns 结果(成功/失败)
  */
@@ -376,7 +376,7 @@ const resetPointer = (id:string) => {
 }
 
 /**
- * 读取编辑指针指向的词库
+ * 读取编辑指针指向的库
  * @param key 被查询者id
  * @returns 结果
  */
