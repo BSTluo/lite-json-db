@@ -29,8 +29,8 @@
 ```typescript
 import litejson from './main/index'
 
-
-const lJson = new litejson(__dirname, 'admin', null)
+// const lJson = new litejson(__dirname, 'admin', 'word.bstluo.top')
+const lJson = new litejson(__dirname, 'admin')
 
 lJson.modifyPointer('json库1')
 lJson.addSingle('a', 'b')
@@ -43,16 +43,12 @@ console.log(lJson.readObject('json库1'))
 
 <br/>
 
-`使用  npm run test   启动demo.ts`
-
-`使用  npm run start   启动index.ts`
-
 # API
 
 ***
 
 ```typescript
-litejson(存储根目录, 当前操作者用户名, 远程存储服务器域名(如：word.bstluo.top)(若无则写null))
+litejson(存储根目录, 当前操作者用户名, 远程存储服务器域名(如：word.bstluo.top)(若无，可不加此项))
 
 lJson.getDBObject()                 获取全部数据库的整合json对象  - 返回为一个对象
 lJson.getDBList()                   获取已有数据库列表            - 返回值为[库名,库名]
