@@ -52,7 +52,7 @@ console.log(lJson.readObject('json库1'))
 ***
 
 ```typescript
-litejson(存储根目录, 当前操作者用户名, 远程存储服务器(若无则写null))
+litejson(存储根目录, 当前操作者用户名, 远程存储服务器域名(如：word.bstluo.top)(若无则写null))
 
 lJson.getDBObject()                 获取全部数据库的整合json对象  - 返回为一个对象
 lJson.getDBList()                   获取已有数据库列表            - 返回值为[库名,库名]
