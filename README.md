@@ -60,8 +60,8 @@ lJson.setKey('键', ['值1','值2'])   为键添加一些值                - �
 lJson.addArray('键', ['值1','值2']) 将键设置为一个值              - 返回是否成功
 lJson.del('键', '1')                删除键的某个下标              - 返回是否成功
 lJson.del('键', 'all')              删除整个键                    - 返回是否成功
-lJson.download('下载码')            下载json到本地(覆盖)          - 返回是否成功
-lJson.upload('库名')                上传某个json到云端            - 返回下载码/失败
+lJson.download('下载码','库名')            下载json到本地的某个库(覆盖)          - 返回<Promise>(成功/失败警报)
+lJson.upload('库名')                上传某个json到云端            - 返回<Promise>(下载码/失败警报)
 lJson.modifyPointer('库名')         设置编辑指针                  - 返回是否成功
 lJson.resetPointer()                重置编辑指针                  - 返回是否成功
 lJson.readKeys('键')                获取键的值                    - 返回键值[]
