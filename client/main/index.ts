@@ -130,14 +130,15 @@ export default class dictionary {
    * @param serialNumber 序号(从1开始、为all则全删)
    * @returns 结果(成功/失败)
    */
-  del = (key:string, serialNumber:string) => { return delWord([this.id, key, serialNumber]) }
+  del = async(key:string, serialNumber:string) => { return delWord([this.id, key, serialNumber]) }
 
   /**
    * 下载json到本地(覆盖)
    * @param key 下载码
+   * @param name json文件名称
    * @returns 结果(成功/失败)
    */
-  download = (key:string) => { return download(key) }
+  download = async(key:string, name:string) => { return download(key, name) }
 
   /**
    * 上传本地json到云端
@@ -307,17 +308,15 @@ const delWord = (information:string[]) => {
  * @param key json名(不加.json)
  * @returns 返回下载码/失败
  */
-const upload = (key:string) => {
+const upload = async(key:string) => {
   const up = getjson('wordData', `${key}.json`)
   if (JSON.stringify(up) !== '{}') {
     try {
-      axios.post(`https://${config.host}/new.php`, up).then(function (response: { data: string }) {
-        // return ` [词库核心] ${response.data}`
-        return response.data
-      })
+      const response = await axios.post(`https://${config.host}/new.php`, up)
+      return response.data
     } catch (error) {
       // return '[词库核心] 上传错误'
-      return '失败'
+      return error
     }
   }
 }
@@ -325,20 +324,23 @@ const upload = (key:string) => {
 /**
  * 下载json到本地
  * @param key 下载码
+ * @param name json文件名
  * @returns 结果(成功/失败)
  */
-const download = (key:string) => {
+const download = async(key:string, name:string) => {
   try {
-    axios.post(`https://${config.host}/read.php`, {
+    const response = await axios.post(`https://${config.host}/read.php`, {
       id: key
-    }).then(function (response: { data: object }) {
-      update('wordData', key, response.data)
-      // return ' [词库核心] 下载成功'
-      return '成功'
     })
+    if (!response) { return }
+
+    update('wordData', name, response.data)
+      // return ' [词库核心] 下载成功'
+    return '成功'
+    
   } catch (error) {
     // return '下载失败，请联系管理员手动进行投稿'
-    return '失败'
+    return error
   }
 }
 
