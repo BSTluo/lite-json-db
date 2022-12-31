@@ -163,9 +163,10 @@ export default class dictionary {
   /**
    * 读取键值
    * @param key 需要读取的键
+   * @param dbName 查询的词库
    * @returns 结果([])
    */
-  readKeys = (key:string) => { return readKeys(key) }
+  readKeys = (key:string, dbName?:string|null) => { return readKeys(key, dbName) }
 
   /**
    * 读取整个库
@@ -391,10 +392,14 @@ const readPointer = (key:string) => {
 /**
  * 读取键值
  * @param key 查询的键
+ * @param dbName 查询的词库,可不填
  * @returns 返回结果([])
  */
- const readKeys = (key:string) => {
-  const data = getWordLibraryObject()
+ const readKeys = (key:string, dbName?:string|null) => {
+  let data: { [x: string]: any } = {}
+  if (!dbName) { data = getWordLibraryObject() }
+  if (dbName) { data = getjson('wordData', dbName) }
+
   if (!data[key]) { return undefined }
   return data[key]
 }
