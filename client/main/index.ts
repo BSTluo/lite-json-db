@@ -174,6 +174,13 @@ export default class dictionary {
    * @returns 返回结果({})
    */
   readObject = (key:string) => { return readObject(key) }
+
+  /**
+   * 直接删除词库
+   * @param dbName 词库名
+   * @returns 结果
+   */
+  mandatoryDelete = (dbName: string) => { return mandatoryDelete(dbName) }
 }
 
 /**
@@ -442,4 +449,18 @@ const setKey = (id:string, key:string, data:string[]) => {
   originData[key] = data
   update('wordData', name, originData)
   return '成功'
+}
+
+/**
+ * 直接删除词库
+ * @param dbName 词库名
+ * @returns 结果
+ */
+const mandatoryDelete = (dbName: string) => {
+  try {
+    fs.unlinkSync(path.join(fileDir, `./word/wordList/${dbName}.json`))
+    return true
+  } catch (err) {
+    return null
+  }
 }
