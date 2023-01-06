@@ -458,7 +458,7 @@ const setKey = (id, key, data) => {
  */
 const mandatoryDelete = (dbName) => {
   try {
-    fs.unlinkSync(path.join(fileDir, `./word/wordList/${dbName}.json`))
+    fs.unlinkSync(path.join(fileDir, `./word/wordData/${dbName}.json`))
     return true
   } catch (err) {
     return null
