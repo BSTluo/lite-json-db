@@ -36,7 +36,7 @@ const update = (list, name, file) => {
   }
 }
 
-export default class dictionary {
+class dictionary {
   id
   /**
    * 定义数据库存储位置
@@ -44,7 +44,7 @@ export default class dictionary {
    * @param id 操作者id
    * @param host 指定云服务器，可为null
    */
-  constructor (dir, id, host) {
+  constructor(dir, id, host) {
     fileDir = dir
     this.id = id
     config.host = (host) ? host : 'word.bstluo.top'
@@ -130,7 +130,7 @@ export default class dictionary {
    * @param serialNumber 序号(从1开始、为all则全删)
    * @returns 结果(成功/失败)
    */
-  del = async(key, serialNumber) => { return delWord([this.id, key, serialNumber]) }
+  del = async (key, serialNumber) => { return delWord([this.id, key, serialNumber]) }
 
   /**
    * 下载json到本地(覆盖)
@@ -138,7 +138,7 @@ export default class dictionary {
    * @param name json文件名称
    * @returns 结果(成功/失败)
    */
-  download = async(key, name) => { return download(key, name) }
+  download = async (key, name) => { return download(key, name) }
 
   /**
    * 上传本地json到云端
@@ -175,7 +175,7 @@ export default class dictionary {
    */
   readObject = (key) => { return readObject(key) }
 
-  
+
   /**
    * 直接删除词库
    * @param dbName 词库名
@@ -317,7 +317,7 @@ const delWord = (information) => {
  * @param key json名(不加.json)
  * @returns 返回下载码/失败
  */
-const upload = async(key) => {
+const upload = async (key) => {
   const up = getjson('wordData', `${key}.json`)
   if (JSON.stringify(up) !== '{}') {
     try {
@@ -336,7 +336,7 @@ const upload = async(key) => {
  * @param name json文件名
  * @returns 结果(成功/失败)
  */
-const download = async(key, name) => {
+const download = async (key, name) => {
   try {
     const response = await axios.post(`https://${config.host}/read.php`, {
       id: key
@@ -344,9 +344,9 @@ const download = async(key, name) => {
     if (!response) { return }
 
     update('wordData', name, response.data)
-      // return ' [词库核心] 下载成功'
+    // return ' [词库核心] 下载成功'
     return '成功'
-    
+
   } catch (error) {
     // return '下载失败，请联系管理员手动进行投稿'
     return error
@@ -402,7 +402,7 @@ const readPointer = (key) => {
  * @param key 查询的键
  * @returns 返回结果([])
  */
- const readKeys = (key, dbName) => {
+const readKeys = (key, dbName) => {
   if (!dbName) { data = getWordLibraryObject() }
   if (dbName) { data = getjson('wordData', dbName) }
 
@@ -459,8 +459,9 @@ const setKey = (id, key, data) => {
 const mandatoryDelete = (dbName) => {
   try {
     fs.unlinkSync(path.join(fileDir, `./word/wordData/${dbName}.json`))
-    return true
+    return '成功'
   } catch (err) {
-    return null
+    return err.toString()
   }
 }
+module.exports = dictionary;
