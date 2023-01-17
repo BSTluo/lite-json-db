@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 此变量存储词库数据位置
-let fileDir
+// let fileDir
 
 const config = {
   'host': ''
@@ -14,7 +14,7 @@ const config = {
   * @param name json文件名
   * @return 词库json对象
   */
-const getjson = (list, name) => {
+const getjson = (fileDir, list, name) => {
   const wordPath = path.join(fileDir, `./word/${list}/${name}`)
   if (!fs.existsSync(wordPath)) {
     fs.writeFileSync(wordPath, '{}')
@@ -29,7 +29,7 @@ const getjson = (list, name) => {
   * @param name json文件名
   * @param file 词库json对象
   */
-const update = (list, name, file) => {
+const update = (fileDir, list, name, file) => {
   try {
     fs.writeFileSync(path.join(fileDir, `./word/${list}/${name}.json`), JSON.stringify(file, null, 3))
   } catch (error) {
@@ -38,6 +38,8 @@ const update = (list, name, file) => {
 
 class dictionary {
   id
+  fileDir
+
   /**
    * 定义数据库存储位置
    * @param dir 存储库根目录
@@ -45,10 +47,11 @@ class dictionary {
    * @param host 指定云服务器，可为null
    */
   constructor(dir, id, host) {
-    fileDir = dir
+    this.fileDir = dir
     this.id = id
     config.host = (host) ? host : 'word.bstluo.top'
 
+    try { fs.mkdirSync(path.join(dir)) } catch (err) { }
     try { fs.mkdirSync(path.join(dir, 'word')) } catch (err) { }
     try { fs.mkdirSync(path.join(dir, 'word/wordData')) } catch (err) { }
     try { fs.mkdirSync(path.join(dir, 'word/userData')) } catch (err) { }
@@ -59,7 +62,7 @@ class dictionary {
    * 获取json对象
    * @returns json对象
    */
-  getDBObject = () => { return getWordLibraryObject() }
+  getDBObject = () => { return getWordLibraryObject(this.fileDir) }
 
   /**
    * 获取已有数据库列表
@@ -70,7 +73,7 @@ class dictionary {
     const out = ['[词库核心]', '当前有以下词库：'].concat(getWordLibraryList()).join('\n')
     return out
     */
-    return getWordLibraryList()
+    return getWordLibraryList(this.fileDir)
   }
 
   /**
@@ -83,7 +86,7 @@ class dictionary {
     const out = ['[词库核心]', '当前有以下词库：'].concat(findWordLibraryList(key)).join('\n')
     return out
     */
-    return findWordLibraryList(key)
+    return findWordLibraryList(this.fileDir ,key)
   }
 
   /**
@@ -91,14 +94,14 @@ class dictionary {
    * @param key 关键词
    * @returns 查询结果[[库名, 问],[库名, 问]...]
    */
-  findTrigger = (key) => { return toFindTrigger(key)[0] }
+  findTrigger = (key) => { return toFindTrigger(this.fileDir ,key)[0] }
 
   /**
    * 根据关键词查找值
    * @param key 关键词
    * @returns 查询结果[[库名, 问, 答],[库名, 问, 答]...]
    */
-  findReport = (key) => { return toFindTrigger(key)[1] }
+  findReport = (key) => { return toFindTrigger(this.fileDir ,key)[1] }
 
   /**
    * 添加单个值
@@ -106,7 +109,9 @@ class dictionary {
    * @param item 值
    * @returns 结果(返回此键的长度)
    */
-  addSingle = (key, item) => { return addWord([this.id, key, item]) }
+  addSingle = (key, item) => {
+    return addWord(this.fileDir, [this.id, key, item])
+  }
 
   /**
    * 将一些数据设置为某个键
@@ -114,7 +119,7 @@ class dictionary {
    * @param arr 数据(['a','b',.....])
    * @returns 结果
   */
-  setKey = (key, arr) => { return setKey(this.id, key, arr) }
+  setKey = (key, arr) => { return setKey(this.fileDir, this.id, key, arr) }
 
   /**
    * 将一些数据添加到某个键
@@ -122,7 +127,7 @@ class dictionary {
    * @param arr 数据(['a','b',.....])
    * @returns 结果
   */
-  addArray = (key, arr) => { return addArray(this.id, key, arr) }
+  addArray = (key, arr) => { return addArray(this.fileDir, this.id, key, arr) }
 
   /**
    * 删除键的某个下标
@@ -130,7 +135,7 @@ class dictionary {
    * @param serialNumber 序号(从1开始、为all则全删)
    * @returns 结果(成功/失败)
    */
-  del = async (key, serialNumber) => { return delWord([this.id, key, serialNumber]) }
+  del = async (key, serialNumber) => { return delWord(this.fileDir, [this.id, key, serialNumber]) }
 
   /**
    * 下载json到本地(覆盖)
@@ -138,27 +143,27 @@ class dictionary {
    * @param name json文件名称
    * @returns 结果(成功/失败)
    */
-  download = async (key, name) => { return download(key, name) }
+  download = async (key, name) => { return download(this.fileDir, key, name) }
 
   /**
    * 上传本地json到云端
    * @param key 库名(不用加.json)
    * @returns 结果(下载码/失败)
    */
-  upload = (key) => { return upload(key) }
+  upload = (key) => { return upload(this.fileDir, key) }
 
   /**
    * 修改编辑指针
    * @param key 到哪个json
    * @returns 结果(成功)
    */
-  modifyPointer = (key) => { return modifyPointer([this.id, key]) }
+  modifyPointer = (key) => { return modifyPointer(this.fileDir, [this.id, key]) }
 
   /**
    * 重置编辑指针到'公共'
    * @returns 结果(成功)
    */
-  resetPointer = () => { return resetPointer(this.id) }
+  resetPointer = () => { return resetPointer(this.fileDir, this.id) }
 
   /**
    * 读取键值
@@ -166,14 +171,14 @@ class dictionary {
    * @param dbName 查询的词库,为null则查询所有库
    * @returns 结果([])
    */
-  readKeys = (key, dbName) => { return readKeys(key, dbName) }
+  readKeys = (key, dbName) => { return readKeys(this.fileDir ,key, dbName) }
 
   /**
    * 读取整个库
    * @param key 库名
    * @returns 返回结果({})
    */
-  readObject = (key) => { return readObject(key) }
+  readObject = (key) => { return readObject(this.fileDir, key) }
 
 
   /**
@@ -181,14 +186,14 @@ class dictionary {
    * @param dbName 词库名
    * @returns 结果
    */
-  mandatoryDelete = (dbName) => { return mandatoryDelete(dbName) }
+  mandatoryDelete = (dbName) => { return mandatoryDelete(this.fileDir ,dbName) }
 }
 
 /**
  * 获取数据库库表
  * @returns 数据库库表
  */
-const getWordLibraryList = () => {
+const getWordLibraryList = (fileDir) => {
   const fileName = path.join(fileDir, './word/wordData')
   const list = fs.readdirSync(fileName)
   const kulist = []
@@ -207,12 +212,12 @@ const getWordLibraryList = () => {
  * 初始化数据库对象
  * @returns 数据库对象
  */
-const getWordLibraryObject = () => {
-  const list = getWordLibraryList()
+const getWordLibraryObject = (fileDir) => {
+  const list = getWordLibraryList(fileDir)
   const data = {}
 
   list.forEach(function (item) {
-    const wordLibraryObj = getjson('wordData', `${item}.json`)
+    const wordLibraryObj = getjson(fileDir, 'wordData', `${item}.json`)
     const thesaurusKeywordsList = Object.keys(wordLibraryObj)
     for (let i = 0; i < thesaurusKeywordsList.length; i++) {
       if (!data[thesaurusKeywordsList[i]]) {
@@ -230,8 +235,8 @@ const getWordLibraryObject = () => {
  * @param keywords 查询关键词
  * @returns 包含此关键词的库名
  */
-const findWordLibraryList = (keywords) => {
-  const list = getWordLibraryList()
+const findWordLibraryList = (fileDir, keywords) => {
+  const list = getWordLibraryList(fileDir)
 
   list.filter(function (item) {
     return item.indexOf(keywords) > 0
@@ -245,13 +250,13 @@ const findWordLibraryList = (keywords) => {
  * @param key 需要寻找的关键词
  * @returns 输出结果[ [[库名, 问],[库名, 问]] , [[库名, 问, 答],[库名, 问, 答]] ]
  */
-const toFindTrigger = (key) => {
-  const list = getWordLibraryList()
+const toFindTrigger = (fileDir, key) => {
+  const list = getWordLibraryList(fileDir)
   const resultKeysArray = []
   const resultItemArray = []
 
   list.forEach(function (item) {
-    const wordLibraryObj = getjson('wordData', `${item}.json`)
+    const wordLibraryObj = getjson(fileDir, 'wordData', `${item}.json`)
     const thesaurusKeywordsList = Object.keys(wordLibraryObj)
 
     for (const tagKeys of thesaurusKeywordsList) {
@@ -275,16 +280,16 @@ const toFindTrigger = (key) => {
  * @param information [id, keys, item]
  * @returns 结果(返回此键的长度)
  */
-const addWord = (information) => {
-  const name = readPointer(information[0])
+const addWord = (fileDir, information) => {
+  const name = readPointer(fileDir, information[0])
   const q = information[1]
   const a = information[2]
-  const data = getjson('wordData', `${name}.json`)
+  const data = getjson(fileDir, 'wordData', `${name}.json`)
 
   if (!data[q]) { data[q] = [] }
   data[q].push(a)
 
-  update('wordData', name, data)
+  update(fileDir, 'wordData', name, data)
   // return `[词库核心] 添加成功，当前序号为${data[q].length}`
   return data[q].length
 }
@@ -294,11 +299,11 @@ const addWord = (information) => {
  * @param information [id, keys, 下标]
  * @returns 结果(成功/失败)
  */
-const delWord = (information) => {
-  const name = readPointer(information[0])
+const delWord = (fileDir, information) => {
+  const name = readPointer(fileDir, information[0])
   const q = information[1]
   const index = String(information[2]) // 删除下标
-  const data = getjson('wordData', `${name}.json`)
+  const data = getjson(fileDir, 'wordData', `${name}.json`)
   if (!data[q]) { /* return '[词库核心] 不存在这个词库啦...!' */ return '失败' }
 
   if (index === 'all') {
@@ -307,7 +312,7 @@ const delWord = (information) => {
     data[q].splice(Number(index) - 1)
   }
 
-  update('wordData', name, data)
+  update(fileDir, 'wordData', name, data)
 
   return '成功'
 }
@@ -317,8 +322,8 @@ const delWord = (information) => {
  * @param key json名(不加.json)
  * @returns 返回下载码/失败
  */
-const upload = async (key) => {
-  const up = getjson('wordData', `${key}.json`)
+const upload = async (fileDir, key) => {
+  const up = getjson(fileDir, 'wordData', `${key}.json`)
   if (JSON.stringify(up) !== '{}') {
     try {
       const response = await axios.post(`https://${config.host}/new.php`, up)
@@ -336,14 +341,14 @@ const upload = async (key) => {
  * @param name json文件名
  * @returns 结果(成功/失败)
  */
-const download = async (key, name) => {
+const download = async (fileDir, key, name) => {
   try {
     const response = await axios.post(`https://${config.host}/read.php`, {
       id: key
     })
     if (!response) { return }
 
-    update('wordData', name, response.data)
+    update(fileDir, 'wordData', name, response.data)
     // return ' [词库核心] 下载成功'
     return '成功'
 
@@ -358,13 +363,13 @@ const download = async (key, name) => {
  * @param obj [id:string, 指向词库名]
  * @returns 结果(成功)
  */
-const modifyPointer = (obj) => {
+const modifyPointer = (fileDir, obj) => {
   const id = obj[0]
   const pointer = obj[1]
-  const data = getjson('wordconfig', 'listConfig.json')
+  const data = getjson(fileDir, 'wordconfig', 'listConfig.json')
 
   data[id] = pointer
-  update('wordconfig', 'listConfig', data)
+  update(fileDir, 'wordconfig', 'listConfig', data)
 
   // return '[词库核心] 修改指针成功'
   return '成功'
@@ -375,12 +380,12 @@ const modifyPointer = (obj) => {
  * @param id 字符串 是指你的id
  * @returns 结果(成功)
  */
-const resetPointer = (id) => {
-  const data = getjson('wordconfig', 'listConfig.json')
+const resetPointer = (fileDir, id) => {
+  const data = getjson(fileDir, 'wordconfig', 'listConfig.json')
   if (!data[id]) { data[id] = '' }
 
   delete data[id]
-  update('wordconfig', 'listConfig', data)
+  update(fileDir, 'wordconfig', 'listConfig', data)
 
   // return '[词库核心] 重置指针成功'
   return '成功'
@@ -391,8 +396,8 @@ const resetPointer = (id) => {
  * @param key 被查询者id
  * @returns 结果
  */
-const readPointer = (key) => {
-  const data = getjson('wordconfig', 'listConfig.json')
+const readPointer = (fileDir, key) => {
+  const data = getjson(fileDir, 'wordconfig', 'listConfig.json')
   if (!data[key]) { data[key] = '公共' }
   return data[key]
 }
@@ -402,9 +407,10 @@ const readPointer = (key) => {
  * @param key 查询的键
  * @returns 返回结果([])
  */
-const readKeys = (key, dbName) => {
-  if (!dbName) { data = getWordLibraryObject() }
-  if (dbName) { data = getjson('wordData', dbName) }
+const readKeys = (fileDir, key, dbName) => {
+  let data
+  if (!dbName) { data = getWordLibraryObject(fileDir) }
+  if (dbName) { data = getjson(fileDir, 'wordData', dbName) }
 
   if (!data[key]) { return undefined }
   return data[key]
@@ -415,8 +421,8 @@ const readKeys = (key, dbName) => {
  * @param key 库名
  * @returns 返回结果({})
  */
-const readObject = (key) => {
-  const data = getjson('wordData', `${key}.json`)
+const readObject = (fileDir, key) => {
+  const data = getjson(fileDir, 'wordData', `${key}.json`)
   return data
 }
 
@@ -427,11 +433,11 @@ const readObject = (key) => {
  * @param data 添加的数组
  * @returns 结果
  */
-const addArray = (id, key, data) => {
-  const name = readPointer(id)
-  const originData = getjson('wordData', `${name}.json`)
+const addArray = (fileDir, id, key, data) => {
+  const name = readPointer(fileDir, id)
+  const originData = getjson(fileDir, 'wordData', `${name}.json`)
   originData[key] = originData[key].concat(data)
-  update('wordData', name, originData)
+  update(fileDir, 'wordData', name, originData)
   return '成功'
 }
 
@@ -442,11 +448,11 @@ const addArray = (id, key, data) => {
  * @param data 设定的数组
  * @returns 结果
  */
-const setKey = (id, key, data) => {
-  const name = readPointer(id)
-  const originData = getjson('wordData', `${name}.json`)
+const setKey = (fileDir, id, key, data) => {
+  const name = readPointer(fileDir, id)
+  const originData = getjson(fileDir, 'wordData', `${name}.json`)
   originData[key] = data
-  update('wordData', name, originData)
+  update(fileDir, 'wordData', name, originData)
   return '成功'
 }
 
@@ -456,7 +462,7 @@ const setKey = (id, key, data) => {
  * @param dbName 词库名
  * @returns 结果
  */
-const mandatoryDelete = (dbName) => {
+const mandatoryDelete = (fileDir, dbName) => {
   try {
     fs.unlinkSync(path.join(fileDir, `./word/wordData/${dbName}.json`))
     return '成功'
